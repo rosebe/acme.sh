@@ -11,6 +11,9 @@ on:
       - 'dnsapi/*.sh'
       - '.github/workflows/DNS.yml'
 
+concurrency: 
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
 
 jobs:
   CheckToken:
@@ -54,6 +57,8 @@ jobs:
       CASE: le_test_dnsapi
       TEST_LOCAL: 1
       DEBUG: ${{ secrets.DEBUG }}
+      http_proxy: ${{ secrets.http_proxy }}
+      https_proxy: ${{ secrets.https_proxy }}
     steps:
     - uses: actions/checkout@v2
     - name: Clone acmetest
@@ -77,9 +82,13 @@ jobs:
           echo "${{ secrets.TokenName5}}=${{ secrets.TokenValue5}}" >> docker.env
         fi
         echo "TEST_DNS_NO_WILDCARD" >> docker.env
-        echo "TEST_DNS_SLEEP" >> docker.env
+        echo "http_proxy" >> docker.env
+        echo "https_proxy" >> docker.env
     - name: Run acmetest
       run: cd ../acmetest && ./rundocker.sh  testall
+
+
+
 
   MacOS:
     runs-on: macos-latest
@@ -93,6 +102,8 @@ jobs:
       CASE: le_test_dnsapi
       TEST_LOCAL: 1
       DEBUG: ${{ secrets.DEBUG }}
+      http_proxy: ${{ secrets.http_proxy }}
+      https_proxy: ${{ secrets.https_proxy }}
     steps:
     - uses: actions/checkout@v2
     - name: Install tools
@@ -119,6 +130,9 @@ jobs:
         cd ../acmetest
         ./letest.sh
 
+
+
+
   Windows:
     runs-on: windows-latest
     needs: MacOS
@@ -131,6 +145,8 @@ jobs:
       CASE: le_test_dnsapi
       TEST_LOCAL: 1
       DEBUG: ${{ secrets.DEBUG }}
+      http_proxy: ${{ secrets.http_proxy }}
+      https_proxy: ${{ secrets.https_proxy }}
     steps:
     - name: Set git to use LF
       run: |
@@ -172,6 +188,8 @@ jobs:
         cd ../acmetest
         ./letest.sh
 
+
+
   FreeBSD:
     runs-on: macos-12
     needs: Windows
@@ -184,13 +202,15 @@ jobs:
       CASE: le_test_dnsapi
       TEST_LOCAL: 1
       DEBUG: ${{ secrets.DEBUG }}
+      http_proxy: ${{ secrets.http_proxy }}
+      https_proxy: ${{ secrets.https_proxy }}
     steps:
     - uses: actions/checkout@v2
     - name: Clone acmetest
       run: cd .. && git clone https://github.com/acmesh-official/acmetest.git  && cp -r acme.sh acmetest/
     - uses: vmactions/freebsd-vm@v0
       with:
-        envs: 'TEST_DNS TestingDomain TEST_DNS_NO_WILDCARD TEST_DNS_NO_SUBDOMAIN TEST_DNS_SLEEP CASE TEST_LOCAL DEBUG ${{ secrets.TokenName1}} ${{ secrets.TokenName2}} ${{ secrets.TokenName3}} ${{ secrets.TokenName4}} ${{ secrets.TokenName5}}'
+        envs: 'TEST_DNS TestingDomain TEST_DNS_NO_WILDCARD TEST_DNS_NO_SUBDOMAIN TEST_DNS_SLEEP CASE TEST_LOCAL DEBUG http_proxy https_proxy ${{ secrets.TokenName1}} ${{ secrets.TokenName2}} ${{ secrets.TokenName3}} ${{ secrets.TokenName4}} ${{ secrets.TokenName5}}'
         prepare: pkg install -y socat curl
         usesh: true
         copyback: false
@@ -213,6 +233,9 @@ jobs:
           cd ../acmetest
           ./letest.sh
 
+
+
+
   Solaris:
     runs-on: macos-12
     needs: FreeBSD
@@ -225,13 +248,15 @@ jobs:
       CASE: le_test_dnsapi
       TEST_LOCAL: 1
       DEBUG: ${{ secrets.DEBUG }}
+      http_proxy: ${{ secrets.http_proxy }}
+      https_proxy: ${{ secrets.https_proxy }}
     steps:
     - uses: actions/checkout@v2
     - name: Clone acmetest
       run: cd .. && git clone https://github.com/acmesh-official/acmetest.git  && cp -r acme.sh acmetest/
     - uses: vmactions/solaris-vm@v0
       with:
-        envs: 'TEST_DNS TestingDomain TEST_DNS_NO_WILDCARD TEST_DNS_NO_SUBDOMAIN TEST_DNS_SLEEP CASE TEST_LOCAL DEBUG ${{ secrets.TokenName1}} ${{ secrets.TokenName2}} ${{ secrets.TokenName3}} ${{ secrets.TokenName4}} ${{ secrets.TokenName5}}'
+        envs: 'TEST_DNS TestingDomain TEST_DNS_NO_WILDCARD TEST_DNS_NO_SUBDOMAIN TEST_DNS_SLEEP CASE TEST_LOCAL DEBUG http_proxy https_proxy ${{ secrets.TokenName1}} ${{ secrets.TokenName2}} ${{ secrets.TokenName3}} ${{ secrets.TokenName4}} ${{ secrets.TokenName5}}'
         copyback: false
         prepare: pkgutil -y -i socat
         run: |
@@ -256,6 +281,8 @@ jobs:
           ./letest.sh
 
 
+
+
   OpenBSD:
     runs-on: macos-12
     needs: Solaris
@@ -268,13 +295,15 @@ jobs:
       CASE: le_test_dnsapi
       TEST_LOCAL: 1
       DEBUG: ${{ secrets.DEBUG }}
+      http_proxy: ${{ secrets.http_proxy }}
+      https_proxy: ${{ secrets.https_proxy }}
     steps:
     - uses: actions/checkout@v2
     - name: Clone acmetest
       run: cd .. && git clone https://github.com/acmesh-official/acmetest.git  && cp -r acme.sh acmetest/
     - uses: vmactions/openbsd-vm@v0
       with:
-        envs: 'TEST_DNS TestingDomain TEST_DNS_NO_WILDCARD TEST_DNS_NO_SUBDOMAIN TEST_DNS_SLEEP CASE TEST_LOCAL DEBUG ${{ secrets.TokenName1}} ${{ secrets.TokenName2}} ${{ secrets.TokenName3}} ${{ secrets.TokenName4}} ${{ secrets.TokenName5}}'
+        envs: 'TEST_DNS TestingDomain TEST_DNS_NO_WILDCARD TEST_DNS_NO_SUBDOMAIN TEST_DNS_SLEEP CASE TEST_LOCAL DEBUG http_proxy https_proxy ${{ secrets.TokenName1}} ${{ secrets.TokenName2}} ${{ secrets.TokenName3}} ${{ secrets.TokenName4}} ${{ secrets.TokenName5}}'
         prepare: pkg_add socat curl
         usesh: true
         copyback: false
@@ -297,6 +326,9 @@ jobs:
           cd ../acmetest
           ./letest.sh
 
+
+
+
   NetBSD:
     runs-on: macos-12
     needs: OpenBSD
@@ -309,13 +341,15 @@ jobs:
       CASE: le_test_dnsapi
       TEST_LOCAL: 1
       DEBUG: ${{ secrets.DEBUG }}
+      http_proxy: ${{ secrets.http_proxy }}
+      https_proxy: ${{ secrets.https_proxy }}
     steps:
     - uses: actions/checkout@v2
     - name: Clone acmetest
       run: cd .. && git clone https://github.com/acmesh-official/acmetest.git  && cp -r acme.sh acmetest/
     - uses: vmactions/netbsd-vm@v0
       with:
-        envs: 'TEST_DNS TestingDomain TEST_DNS_NO_WILDCARD TEST_DNS_NO_SUBDOMAIN TEST_DNS_SLEEP CASE TEST_LOCAL DEBUG ${{ secrets.TokenName1}} ${{ secrets.TokenName2}} ${{ secrets.TokenName3}} ${{ secrets.TokenName4}} ${{ secrets.TokenName5}}'
+        envs: 'TEST_DNS TestingDomain TEST_DNS_NO_WILDCARD TEST_DNS_NO_SUBDOMAIN TEST_DNS_SLEEP CASE TEST_LOCAL DEBUG http_proxy https_proxy ${{ secrets.TokenName1}} ${{ secrets.TokenName2}} ${{ secrets.TokenName3}} ${{ secrets.TokenName4}} ${{ secrets.TokenName5}}'
         prepare: |
           pkg_add curl socat
         usesh: true
@@ -338,7 +372,10 @@ jobs:
           fi
           cd ../acmetest
           ./letest.sh
-          
+
+
+
+
   DragonFlyBSD:
     runs-on: macos-12
     needs: NetBSD
@@ -351,13 +388,15 @@ jobs:
       CASE: le_test_dnsapi
       TEST_LOCAL: 1
       DEBUG: ${{ secrets.DEBUG }}
+      http_proxy: ${{ secrets.http_proxy }}
+      https_proxy: ${{ secrets.https_proxy }}
     steps:
     - uses: actions/checkout@v2
     - name: Clone acmetest
       run: cd .. && git clone https://github.com/acmesh-official/acmetest.git  && cp -r acme.sh acmetest/
     - uses: vmactions/dragonflybsd-vm@v0
       with:
-        envs: 'TEST_DNS TestingDomain TEST_DNS_NO_WILDCARD TEST_DNS_NO_SUBDOMAIN TEST_DNS_SLEEP CASE TEST_LOCAL DEBUG ${{ secrets.TokenName1}} ${{ secrets.TokenName2}} ${{ secrets.TokenName3}} ${{ secrets.TokenName4}} ${{ secrets.TokenName5}}'
+        envs: 'TEST_DNS TestingDomain TEST_DNS_NO_WILDCARD TEST_DNS_NO_SUBDOMAIN TEST_DNS_SLEEP CASE TEST_LOCAL DEBUG http_proxy https_proxy ${{ secrets.TokenName1}} ${{ secrets.TokenName2}} ${{ secrets.TokenName3}} ${{ secrets.TokenName4}} ${{ secrets.TokenName5}}'
         prepare: |
           pkg install -y curl socat
         usesh: true
@@ -380,4 +419,8 @@ jobs:
           fi
           cd ../acmetest
           ./letest.sh
+
+
+
+
 

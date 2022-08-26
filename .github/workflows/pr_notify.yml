@@ -7,7 +7,7 @@ on:
     branches:
       - 'dev'
     paths:
-      - 'dnsapi/*.sh'
+      - 'notify/*.sh'
 
 
 jobs:
@@ -22,7 +22,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: `**Welcome**
-                Please make sure you're read our [DNS API Dev Guide](../wiki/DNS-API-Dev-Guide) and [DNS-API-Test](../wiki/DNS-API-Test).
+                Please make sure you're read our [Code-of-conduct](../wiki/Code-of-conduct) and  add the usage here: [notify](../wiki/notify).
                 Then reply on this message, otherwise, your code will not be reviewed or merged.
                 We look forward to reviewing your Pull request shortly ✨
                 `
